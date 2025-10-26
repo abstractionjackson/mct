@@ -368,24 +368,10 @@ function updateHappinessButton() {
     const happiness = loadHappiness();
     const todayEntry = happiness.find(h => h.date === today);
     const button = document.getElementById('openHappinessModal');
-    button.textContent = todayEntry ? 'Update Happiness Entry' : 'Add Happiness Entry';
+    if (button) {
+        button.textContent = todayEntry ? 'Update Happiness Entry' : 'Add Happiness Entry';
+    }
 }
-
-// Set default dates to today
-const today = getDateString(new Date());
-document.getElementById('happinessDate').value = today;
-document.getElementById('mediaDate').value = today;
-
-// Update happiness value display
-const happinessSlider = document.getElementById('happiness');
-const happinessValue = document.getElementById('happinessValue');
-
-happinessSlider.addEventListener('input', (e) => {
-    happinessValue.textContent = e.target.value;
-});
-
-// Initialize display
-happinessValue.textContent = happinessSlider.value;
 
 // Visualization
 function drawChart(happiness, media) {
