@@ -691,6 +691,30 @@ window.clearDataAndNavigate = function() {
     Router.navigate('/dashboard');
 };
 
+// Tab switching function
+window.switchTab = function(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    // If switching to chart, redraw it
+    if (tabName === 'chart') {
+        const happiness = loadHappiness();
+        const media = loadMedia();
+        drawChart(happiness, media);
+        const statsEl = document.getElementById('stats');
+        if (statsEl) statsEl.innerHTML = calculateStats(happiness, media);
+    }
+};
+
 Router.register('/example', () => {
     // Mark that we're in example mode
     sessionStorage.setItem('inExampleMode', 'true');

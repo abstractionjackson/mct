@@ -186,20 +186,25 @@ const Pages = {
     
     _visualization() {
         return `
-            <div id="visualization">
-                <h2>Average Media Duration by Happiness Level</h2>
-                <canvas id="chart"></canvas>
-                <div id="stats"></div>
+            <div id="data-section">
+                <div class="tab-switcher">
+                    <button class="tab-button active" onclick="switchTab('entries')">Recent Data</button>
+                    <button class="tab-button" onclick="switchTab('chart')">Chart</button>
+                </div>
+                
+                <div id="entries-tab" class="tab-content active">
+                    <div id="entriesList"></div>
+                </div>
+                
+                <div id="chart-tab" class="tab-content">
+                    <canvas id="chart"></canvas>
+                    <div id="stats"></div>
+                </div>
             </div>
         `;
     },
     
     _entries() {
-        return `
-            <div id="entries">
-                <h2>Recent Data</h2>
-                <div id="entriesList"></div>
-            </div>
-        `;
+        return '';
     }
 };

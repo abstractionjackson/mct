@@ -146,6 +146,47 @@ h2 {
     font-size: 1.2em;
 }
 
+#data-section {
+    margin-top: 30px;
+}
+
+.tab-switcher {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.tab-button:hover {
+    color: #000;
+    background: #f5f5f5;
+}
+
+.tab-button.active {
+    color: #000;
+    border-bottom-color: #000;
+    font-weight: 500;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
 .action-buttons {
     margin-bottom: 30px;
     display: flex;
