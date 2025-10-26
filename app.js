@@ -2,6 +2,7 @@
 const HAPPINESS_KEY = 'happinessRatings';
 const MEDIA_KEY = 'mediaEntries';
 const SOURCES_KEY = 'mediaSources';
+const ONBOARDING_KEY = 'hasSeenOnboarding';
 
 function loadHappiness() {
     const data = localStorage.getItem(HAPPINESS_KEY);
@@ -28,6 +29,14 @@ function loadSources() {
 
 function saveSources(sources) {
     localStorage.setItem(SOURCES_KEY, JSON.stringify(sources));
+}
+
+function hasSeenOnboarding() {
+    return localStorage.getItem(ONBOARDING_KEY) === 'true';
+}
+
+function markOnboardingComplete() {
+    localStorage.setItem(ONBOARDING_KEY, 'true');
 }
 
 function addOrUpdateSource(name, type) {
@@ -582,3 +591,39 @@ function render() {
 // Initial render
 render();
 updateHappinessButton();
+
+// Onboarding
+function showOnboarding() {
+    document.getElementById('onboarding').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+}
+
+function showApp() {
+    document.getElementById('onboarding').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    render();
+    updateHappinessButton();
+}
+
+// Check if user has seen onboarding
+if (hasSeenOnboarding()) {
+    showApp();
+} else {
+    showOnboarding();
+}
+
+// Onboarding button handlers
+document.getElementById('getStartedBtn').addEventListener('click', () => {
+    markOnboardingComplete();
+    showApp();
+});
+
+document.getElementById('seeExampleBtn').addEventListener('click', () => {
+    // Load example data but don't mark onboarding as complete
+    // This allows them to clear data and see onboarding again
+    if (loadHappiness().length === 0 && loadMedia().length === 0) {
+        loadExampleData();
+    }
+    markOnboardingComplete();
+    showApp();
+});

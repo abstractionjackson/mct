@@ -65,6 +65,7 @@ function loadExampleData() {
 }
 
 // Auto-load if localStorage is empty
-if (!localStorage.getItem('happinessRatings') && !localStorage.getItem('mediaEntries')) {
-    loadExampleData();
+if (!localStorage.getItem('happinessRatings') && !localStorage.getItem('mediaEntries') && !localStorage.getItem('hasSeenOnboarding')) {
+    // Don't auto-load on first visit, let onboarding handle it
+    console.log('First time visitor - showing onboarding');
 }

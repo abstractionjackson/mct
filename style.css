@@ -12,6 +12,48 @@ body {
     margin: 0 auto;
 }
 
+.onboarding {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.onboarding-content {
+    text-align: center;
+    max-width: 600px;
+}
+
+.onboarding h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.onboarding-description {
+    font-size: 1.1em;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.onboarding-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.secondary-button {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+}
+
+.secondary-button:hover {
+    background: #f0f0f0;
+}
+
 h1 {
     margin-bottom: 20px;
 }
