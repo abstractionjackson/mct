@@ -556,6 +556,14 @@ function renderEntries(happiness, media) {
         return;
     }
     
+    // Load sources for image lookup
+    const sources = loadSources();
+    const sourceMap = {};
+    sources.forEach(s => {
+        const key = `${s.name}-${s.type}`;
+        sourceMap[key] = s;
+    });
+    
     // Group by date
     const dateMap = {};
     
@@ -587,12 +595,23 @@ function renderEntries(happiness, media) {
                 <div class="day-header">
                     ${formatDateHuman(date)} • ${happinessText} • ${totalDuration} min total
                 </div>
-                ${data.media.length > 0 ? data.media.map(m => `
-                    <div class="media-item">
-                        ${m.name} (${m.type}, ${m.duration} min)
-                        <button class="delete-btn" onclick="handleDeleteMedia(${m.id})">Delete</button>
-                    </div>
-                `).join('') : '<div class="media-item">No media entries</div>'}
+                ${data.media.length > 0 ? data.media.map(m => {
+                    const sourceKey = `${m.name}-${m.type}`;
+                    const source = sourceMap[sourceKey];
+                    const thumbnail = source?.imageUrl 
+                        ? `<img src="${source.imageUrl}" alt="${m.name}" class="media-thumbnail">` 
+                        : '';
+                    
+                    return `
+                        <div class="media-item">
+                            ${thumbnail}
+                            <div class="media-item-content">
+                                <strong>${m.name}</strong> (${m.type}, ${m.duration} min)
+                            </div>
+                            <button class="delete-btn" onclick="handleDeleteMedia(${m.id})">Delete</button>
+                        </div>
+                    `;
+                }).join('') : '<div class="media-item">No media entries</div>'}
             </div>
         `;
     }).join('');

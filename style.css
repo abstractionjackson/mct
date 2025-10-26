@@ -516,6 +516,19 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
+}
+
+.media-thumbnail {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.media-item-content {
+    flex: 1;
 }
 
 .delete-btn {
