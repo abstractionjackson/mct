@@ -7,22 +7,82 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.6;
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#root {
+    flex: 1;
+}
+
+.navbar {
+    background: #000;
+    color: #fff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #000;
+}
+
+.navbar-brand {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.navbar-brand:hover {
+    color: #ccc;
+}
+
+.container {
     padding: 20px;
     max-width: 900px;
     margin: 0 auto;
 }
 
+.footer {
+    background: #f5f5f5;
+    border-top: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+.sitemap {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.sitemap a {
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.sitemap a:hover {
+    text-decoration: underline;
+}
+
 .onboarding {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     min-height: 100vh;
-    padding: 20px;
 }
 
 .onboarding-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     text-align: center;
     max-width: 600px;
+    margin: 0 auto;
 }
 
 .onboarding h1 {
@@ -52,13 +112,6 @@ body {
 
 .secondary-button:hover {
     background: #f0f0f0;
-}
-
-.nav-buttons {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
 }
 
 .demo-badge {

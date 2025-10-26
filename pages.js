@@ -13,17 +13,15 @@ const Pages = {
                         <button onclick="Router.navigate('/example')" class="action-button secondary-button">See an Example</button>
                     </div>
                 </div>
+                ${this._footer()}
             </div>
         `;
     },
     
     dashboard() {
         return `
+            ${this._navbar()}
             <div class="container">
-                <div class="nav-buttons">
-                    <button onclick="Router.navigate('/example')" class="action-button secondary-button">View Example</button>
-                </div>
-                
                 <h1>Media & Happiness Tracker</h1>
                 
                 <div class="action-buttons">
@@ -35,16 +33,14 @@ const Pages = {
                 ${this._visualization()}
                 ${this._entries()}
             </div>
+            ${this._footer()}
         `;
     },
     
     example() {
         return `
+            ${this._navbar()}
             <div class="container">
-                <div class="nav-buttons">
-                    <button onclick="Router.navigate('/dashboard')" class="action-button secondary-button">← Back to Dashboard</button>
-                </div>
-                
                 <h1>Media & Happiness Tracker <span class="demo-badge">(Example)</span></h1>
                 
                 <div class="action-buttons">
@@ -56,6 +52,27 @@ const Pages = {
                 ${this._visualization()}
                 ${this._entries()}
             </div>
+            ${this._footer()}
+        `;
+    },
+    
+    _navbar() {
+        return `
+            <nav class="navbar">
+                <a href="#/dashboard" class="navbar-brand">Media & Happiness Tracker</a>
+            </nav>
+        `;
+    },
+    
+    _footer() {
+        return `
+            <footer class="footer">
+                <div class="sitemap">
+                    <a href="#/landing?force=true">Home</a>
+                    <a href="#/dashboard">Dashboard</a>
+                    <a href="#/example">Example</a>
+                </div>
+            </footer>
         `;
     },
     

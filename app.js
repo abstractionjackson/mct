@@ -631,8 +631,9 @@ function updateHappinessButton() {
 
 // Router setup
 Router.register('/', () => {
-    // If user has data, go straight to dashboard
-    if (loadHappiness().length > 0 || loadMedia().length > 0) {
+    // If user has data, go straight to dashboard (unless force=true)
+    const params = Router.getQueryParams();
+    if (!params.force && (loadHappiness().length > 0 || loadMedia().length > 0)) {
         Router.navigate('/dashboard');
         return;
     }
@@ -640,8 +641,9 @@ Router.register('/', () => {
 });
 
 Router.register('/landing', () => {
-    // If user has data, go straight to dashboard
-    if (loadHappiness().length > 0 || loadMedia().length > 0) {
+    // If user has data, go straight to dashboard (unless force=true)
+    const params = Router.getQueryParams();
+    if (!params.force && (loadHappiness().length > 0 || loadMedia().length > 0)) {
         Router.navigate('/dashboard');
         return;
     }
