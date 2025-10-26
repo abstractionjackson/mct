@@ -83,6 +83,9 @@ const Pages = {
                     <a href="#/dashboard">Dashboard</a>
                     <a href="#/example">Example</a>
                 </div>
+                <div class="copyright">
+                    © ${new Date().getFullYear()} abstractionjackson
+                </div>
             </footer>
         `;
     },
