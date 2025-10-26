@@ -54,6 +54,19 @@ body {
     background: #f0f0f0;
 }
 
+.nav-buttons {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.demo-badge {
+    font-size: 0.5em;
+    color: #666;
+    font-weight: normal;
+}
+
 h1 {
     margin-bottom: 20px;
 }

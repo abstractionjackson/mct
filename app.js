@@ -2,7 +2,6 @@
 const HAPPINESS_KEY = 'happinessRatings';
 const MEDIA_KEY = 'mediaEntries';
 const SOURCES_KEY = 'mediaSources';
-const ONBOARDING_KEY = 'hasSeenOnboarding';
 
 function loadHappiness() {
     const data = localStorage.getItem(HAPPINESS_KEY);
@@ -29,14 +28,6 @@ function loadSources() {
 
 function saveSources(sources) {
     localStorage.setItem(SOURCES_KEY, JSON.stringify(sources));
-}
-
-function hasSeenOnboarding() {
-    return localStorage.getItem(ONBOARDING_KEY) === 'true';
-}
-
-function markOnboardingComplete() {
-    localStorage.setItem(ONBOARDING_KEY, 'true');
 }
 
 function addOrUpdateSource(name, type) {
@@ -150,87 +141,117 @@ function deleteMedia(id) {
 }
 
 // Form handling
-document.getElementById('happinessForm').addEventListener('submit', (e) => {
-    e.preventDefault();
+function setupFormHandlers() {
+    const happinessForm = document.getElementById('happinessForm');
+    const mediaForm = document.getElementById('mediaForm');
+    const mediaSearch = document.getElementById('mediaSearch');
     
-    const date = document.getElementById('happinessDate').value;
-    const happiness = parseInt(document.getElementById('happiness').value);
+    if (!happinessForm || !mediaForm) return;
     
-    const action = addHappiness(date, happiness);
+    // Remove old listeners by cloning
+    const newHappinessForm = happinessForm.cloneNode(true);
+    happinessForm.parentNode.replaceChild(newHappinessForm, happinessForm);
     
-    const message = document.getElementById('happinessMessage');
-    message.textContent = action === 'updated' 
-        ? 'Happiness rating updated for this date' 
-        : 'Happiness rating saved';
-    message.className = 'success';
+    const newMediaForm = mediaForm.cloneNode(true);
+    mediaForm.parentNode.replaceChild(newMediaForm, mediaForm);
     
-    setTimeout(() => {
-        message.textContent = '';
-        message.className = '';
-        closeModal('happinessModal');
-    }, 2000);
-    
-    render();
-    updateHappinessButton();
-});
+    document.getElementById('happinessForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const date = document.getElementById('happinessDate').value;
+        const happiness = parseInt(document.getElementById('happiness').value);
+        
+        const action = addHappiness(date, happiness);
+        
+        const message = document.getElementById('happinessMessage');
+        message.textContent = action === 'updated' 
+            ? 'Happiness rating updated for this date' 
+            : 'Happiness rating saved';
+        message.className = 'success';
+        
+        setTimeout(() => {
+            message.textContent = '';
+            message.className = '';
+            closeModal('happinessModal');
+        }, 2000);
+        
+        render();
+        updateHappinessButton();
+    });
 
-document.getElementById('mediaForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const entry = {
-        name: document.getElementById('mediaName').value,
-        type: document.getElementById('mediaType').value,
-        duration: parseInt(document.getElementById('duration').value),
-        date: document.getElementById('mediaDate').value
-    };
-    
-    addMedia(entry);
-    e.target.reset();
-    document.getElementById('searchResults').innerHTML = '';
-    document.getElementById('suggestedSources').innerHTML = '';
-    closeModal('mediaModal');
-    render();
-});
-
-// Media search functionality
-document.getElementById('mediaSearch').addEventListener('input', (e) => {
-    const query = e.target.value.trim();
-    
-    if (query.length < 2) {
+    document.getElementById('mediaForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const entry = {
+            name: document.getElementById('mediaName').value,
+            type: document.getElementById('mediaType').value,
+            duration: parseInt(document.getElementById('duration').value),
+            date: document.getElementById('mediaDate').value
+        };
+        
+        addMedia(entry);
+        e.target.reset();
         document.getElementById('searchResults').innerHTML = '';
-        return;
-    }
-    
-    const results = searchSources(query);
-    
-    if (results.length === 0) {
-        document.getElementById('searchResults').innerHTML = '<div class="search-result-empty">No matches found. Press Enter or Tab to create new source.</div>';
-        return;
-    }
-    
-    document.getElementById('searchResults').innerHTML = results.map(source => `
-        <div class="search-result" onclick="selectSource('${source.name.replace(/'/g, "\\'")}', '${source.type}')">
-            <strong>${source.name}</strong> <span class="result-type">(${source.type})</span>
-        </div>
-    `).join('');
-});
+        document.getElementById('suggestedSources').innerHTML = '';
+        closeModal('mediaModal');
+        render();
+    });
 
-document.getElementById('mediaSearch').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === 'Tab') {
+    // Media search functionality
+    document.getElementById('mediaSearch').addEventListener('input', (e) => {
         const query = e.target.value.trim();
-        if (query.length >= 2) {
-            const results = searchSources(query);
-            if (results.length === 0) {
-                e.preventDefault();
-                // Use search query as new media name
-                document.getElementById('mediaName').value = query;
-                document.getElementById('mediaSearch').value = '';
-                document.getElementById('searchResults').innerHTML = '';
-                document.getElementById('mediaType').focus();
+        
+        if (query.length < 2) {
+            document.getElementById('searchResults').innerHTML = '';
+            return;
+        }
+        
+        const results = searchSources(query);
+        
+        if (results.length === 0) {
+            document.getElementById('searchResults').innerHTML = '<div class="search-result-empty">No matches found. Press Enter or Tab to create new source.</div>';
+            return;
+        }
+        
+        document.getElementById('searchResults').innerHTML = results.map(source => `
+            <div class="search-result" onclick="selectSource('${source.name.replace(/'/g, "\\'")}', '${source.type}')">
+                <strong>${source.name}</strong> <span class="result-type">(${source.type})</span>
+            </div>
+        `).join('');
+    });
+
+    document.getElementById('mediaSearch').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            const query = e.target.value.trim();
+            if (query.length >= 2) {
+                const results = searchSources(query);
+                if (results.length === 0) {
+                    e.preventDefault();
+                    document.getElementById('mediaName').value = query;
+                    document.getElementById('mediaSearch').value = '';
+                    document.getElementById('searchResults').innerHTML = '';
+                    document.getElementById('mediaType').focus();
+                }
             }
         }
+    });
+
+    // Set default dates to today
+    const today = getDateString(new Date());
+    document.getElementById('happinessDate').value = today;
+    document.getElementById('mediaDate').value = today;
+
+    // Update happiness value display
+    const happinessSlider = document.getElementById('happiness');
+    const happinessValue = document.getElementById('happinessValue');
+
+    if (happinessSlider && happinessValue) {
+        happinessSlider.addEventListener('input', (e) => {
+            happinessValue.textContent = e.target.value;
+        });
+        happinessValue.textContent = happinessSlider.value;
     }
-});
+}
 
 function selectSource(name, type) {
     document.getElementById('mediaName').value = name;
@@ -241,6 +262,16 @@ function selectSource(name, type) {
 }
 
 window.selectSource = selectSource;
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'block';
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
 
 function renderSuggestedSources() {
     const recent = getRecentSources();
@@ -283,35 +314,53 @@ window.handleClearSources = function() {
 };
 
 // Modal handling
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
-
-document.getElementById('openHappinessModal').addEventListener('click', () => {
-    openModal('happinessModal');
-});
-
-document.getElementById('openMediaModal').addEventListener('click', () => {
-    renderSuggestedSources();
-    openModal('mediaModal');
-});
-
-document.querySelectorAll('.close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', (e) => {
-        const modalId = e.target.getAttribute('data-modal');
-        closeModal(modalId);
-    });
-});
-
-window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-        e.target.style.display = 'none';
+function setupModalHandlers() {
+    const openHappinessBtn = document.getElementById('openHappinessModal');
+    const openMediaBtn = document.getElementById('openMediaModal');
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
+    const cancelDeleteBtn = document.getElementById('cancelDelete');
+    
+    if (openHappinessBtn) {
+        openHappinessBtn.onclick = () => openModal('happinessModal');
     }
-});
+    
+    if (openMediaBtn) {
+        openMediaBtn.onclick = () => {
+            renderSuggestedSources();
+            openModal('mediaModal');
+        };
+    }
+    
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.onclick = () => {
+            if (deleteAction) {
+                deleteAction();
+                deleteAction = null;
+            }
+            closeModal('deleteModal');
+        };
+    }
+    
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.onclick = () => {
+            deleteAction = null;
+            closeModal('deleteModal');
+        };
+    }
+
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.onclick = (e) => {
+            const modalId = e.target.getAttribute('data-modal');
+            closeModal(modalId);
+        };
+    });
+
+    window.onclick = (e) => {
+        if (e.target.classList.contains('modal')) {
+            e.target.style.display = 'none';
+        }
+    };
+}
 
 // Update happiness button text based on today's entry
 function updateHappinessButton() {
@@ -566,64 +615,53 @@ window.handleDeleteMedia = function(id) {
     openModal('deleteModal');
 };
 
-// Delete modal handlers
-document.getElementById('confirmDelete').addEventListener('click', () => {
-    if (deleteAction) {
-        deleteAction();
-        deleteAction = null;
-    }
-    closeModal('deleteModal');
-});
-
-document.getElementById('cancelDelete').addEventListener('click', () => {
-    deleteAction = null;
-    closeModal('deleteModal');
-});
-
 function render() {
     const happiness = loadHappiness();
     const media = loadMedia();
     drawChart(happiness, media);
-    document.getElementById('stats').innerHTML = calculateStats(happiness, media);
-    renderEntries(happiness, media);
+    const statsEl = document.getElementById('stats');
+    const entriesEl = document.getElementById('entriesList');
+    if (statsEl) statsEl.innerHTML = calculateStats(happiness, media);
+    if (entriesEl) renderEntries(happiness, media);
 }
 
-// Initial render
-render();
-updateHappinessButton();
-
-// Onboarding
-function showOnboarding() {
-    document.getElementById('onboarding').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
+function updateHappinessButton() {
+    const today = getDateString(new Date());
+    const happiness = loadHappiness();
+    const todayEntry = happiness.find(h => h.date === today);
+    const button = document.getElementById('openHappinessModal');
+    if (button) {
+        button.textContent = todayEntry ? 'Update Happiness Entry' : 'Add Happiness Entry';
+    }
 }
 
-function showApp() {
-    document.getElementById('onboarding').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    render();
-    updateHappinessButton();
-}
-
-// Check if user has seen onboarding
-if (hasSeenOnboarding()) {
-    showApp();
-} else {
-    showOnboarding();
-}
-
-// Onboarding button handlers
-document.getElementById('getStartedBtn').addEventListener('click', () => {
-    markOnboardingComplete();
-    showApp();
+// Router setup
+Router.register('/', () => {
+    document.getElementById('root').innerHTML = Pages.landing();
 });
 
-document.getElementById('seeExampleBtn').addEventListener('click', () => {
-    // Load example data but don't mark onboarding as complete
-    // This allows them to clear data and see onboarding again
+Router.register('/landing', () => {
+    document.getElementById('root').innerHTML = Pages.landing();
+});
+
+Router.register('/dashboard', () => {
+    document.getElementById('root').innerHTML = Pages.dashboard();
+    setupFormHandlers();
+    setupModalHandlers();
+    render();
+    updateHappinessButton();
+});
+
+Router.register('/example', () => {
+    // Load example data if not already loaded
     if (loadHappiness().length === 0 && loadMedia().length === 0) {
         loadExampleData();
     }
-    markOnboardingComplete();
-    showApp();
+    document.getElementById('root').innerHTML = Pages.example();
+    setupFormHandlers();
+    setupModalHandlers();
+    render();
+    updateHappinessButton();
 });
+
+Router.init();
