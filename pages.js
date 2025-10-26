@@ -20,7 +20,7 @@ const Pages = {
     
     dashboard() {
         return `
-            ${this._navbar()}
+            ${this._navbar(false)}
             <div class="container">
                 <h1>Media & Happiness Tracker</h1>
                 
@@ -39,7 +39,7 @@ const Pages = {
     
     example() {
         return `
-            ${this._navbar()}
+            ${this._navbar(true)}
             <div class="container">
                 <h1>Media & Happiness Tracker <span class="demo-badge">(Example)</span></h1>
                 
@@ -56,10 +56,19 @@ const Pages = {
         `;
     },
     
-    _navbar() {
+    _navbar(showCTA = false) {
+        let ctaHTML = '';
+        if (showCTA) {
+            // Check if user has data to determine CTA text
+            const hasData = localStorage.getItem('happinessRatings') || localStorage.getItem('mediaEntries');
+            const ctaText = hasData ? 'Dashboard' : 'Get Started';
+            ctaHTML = `<a href="#/dashboard" class="navbar-cta">${ctaText}</a>`;
+        }
+        
         return `
             <nav class="navbar">
                 <a href="#/dashboard" class="navbar-brand">Media & Happiness Tracker</a>
+                ${ctaHTML}
             </nav>
         `;
     },
