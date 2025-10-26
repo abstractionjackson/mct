@@ -195,6 +195,47 @@ h2 {
     display: block;
 }
 
+.image-input-group {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 15px 0;
+    background: #f9f9f9;
+}
+
+.image-input-group label {
+    margin-bottom: 10px;
+}
+
+.input-separator {
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.file-upload-label {
+    display: block;
+    cursor: pointer;
+}
+
+.file-upload-label input[type="file"] {
+    display: none;
+}
+
+.file-upload-text {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+.file-upload-text:hover {
+    background: #000;
+    color: #fff;
+}
+
 .action-buttons {
     margin-bottom: 30px;
     display: flex;

@@ -36,17 +36,19 @@ function clearAllData() {
     localStorage.removeItem(SOURCES_KEY);
 }
 
-function addOrUpdateSource(name, type) {
+function addOrUpdateSource(name, type, imageUrl = null) {
     const sources = loadSources();
     const existing = sources.find(s => s.name === name && s.type === type);
     
     if (existing) {
         existing.lastUsed = new Date().toISOString();
         existing.useCount = (existing.useCount || 0) + 1;
+        if (imageUrl) existing.imageUrl = imageUrl;
     } else {
         sources.push({
             name: name,
             type: type,
+            imageUrl: imageUrl,
             createdAt: new Date().toISOString(),
             lastUsed: new Date().toISOString(),
             useCount: 1
@@ -188,14 +190,20 @@ function setupFormHandlers() {
     document.getElementById('mediaForm').addEventListener('submit', (e) => {
         e.preventDefault();
         
+        const name = document.getElementById('mediaName').value;
+        const type = document.getElementById('mediaType').value;
+        const imageUrl = document.getElementById('mediaImageUrl')?.value || document.getElementById('mediaImageData')?.value || null;
+        
         const entry = {
-            name: document.getElementById('mediaName').value,
-            type: document.getElementById('mediaType').value,
+            name: name,
+            type: type,
             duration: parseInt(document.getElementById('duration').value),
             date: document.getElementById('mediaDate').value
         };
         
         addMedia(entry);
+        addOrUpdateSource(name, type, imageUrl);
+        
         e.target.reset();
         document.getElementById('searchResults').innerHTML = '';
         document.getElementById('suggestedSources').innerHTML = '';
@@ -716,6 +724,30 @@ window.switchTab = function(tabName) {
         const statsEl = document.getElementById('stats');
         if (statsEl) statsEl.innerHTML = calculateStats(happiness, media);
     }
+};
+
+// Handle image file upload and convert to base64
+window.handleImageUpload = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Check file size (limit to 500KB for localStorage)
+    if (file.size > 500000) {
+        alert('Image too large. Please choose an image under 500KB.');
+        event.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('mediaImageData').value = e.target.result;
+        document.getElementById('mediaImageUrl').value = ''; // Clear URL if file uploaded
+        
+        // Update button text to show filename
+        const label = event.target.parentElement.querySelector('.file-upload-text');
+        if (label) label.textContent = file.name;
+    };
+    reader.readAsDataURL(file);
 };
 
 Router.register('/example', () => {

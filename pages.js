@@ -160,6 +160,19 @@ const Pages = {
                             </select>
                         </label>
                         
+                        <div class="image-input-group">
+                            <label>
+                                Image URL:
+                                <input type="url" id="mediaImageUrl" placeholder="https://example.com/image.jpg">
+                            </label>
+                            <span class="input-separator">OR</span>
+                            <label class="file-upload-label">
+                                <input type="file" id="mediaImageFile" accept="image/*" onchange="handleImageUpload(event)">
+                                <span class="file-upload-text">Choose Image</span>
+                            </label>
+                            <input type="hidden" id="mediaImageData">
+                        </div>
+                        
                         <label>
                             Duration (minutes):
                             <input type="number" id="duration" min="1" required>
