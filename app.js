@@ -670,7 +670,13 @@ Router.register('/dashboard', () => {
             localStorage.setItem(SOURCES_KEY, savedSources);
             sessionStorage.removeItem('savedSources');
         }
+    } else if (sessionStorage.getItem('inExampleMode') === 'true') {
+        // Coming from example but had no saved data - clear everything
+        clearAllData();
     }
+    
+    // Clear example mode flag
+    sessionStorage.removeItem('inExampleMode');
     
     document.getElementById('root').innerHTML = Pages.dashboard();
     setupFormHandlers();
@@ -686,16 +692,22 @@ window.clearDataAndNavigate = function() {
 };
 
 Router.register('/example', () => {
-    // Save user's current data temporarily
+    // Mark that we're in example mode
+    sessionStorage.setItem('inExampleMode', 'true');
+    
+    // Save user's current data temporarily (only if it's not already example data)
     const userHappiness = loadHappiness();
     const userMedia = loadMedia();
     const userSources = loadSources();
     
-    // Store in sessionStorage so we can restore it
-    if (userHappiness.length > 0 || userMedia.length > 0) {
-        sessionStorage.setItem('savedHappiness', JSON.stringify(userHappiness));
-        sessionStorage.setItem('savedMedia', JSON.stringify(userMedia));
-        sessionStorage.setItem('savedSources', JSON.stringify(userSources));
+    // Only save to sessionStorage if we don't already have saved data
+    // This prevents saving example data over real user data
+    if (!sessionStorage.getItem('savedHappiness') && !sessionStorage.getItem('savedMedia')) {
+        if (userHappiness.length > 0 || userMedia.length > 0) {
+            sessionStorage.setItem('savedHappiness', JSON.stringify(userHappiness));
+            sessionStorage.setItem('savedMedia', JSON.stringify(userMedia));
+            sessionStorage.setItem('savedSources', JSON.stringify(userSources));
+        }
     }
     
     // Clear and load example data
