@@ -1,6 +1,10 @@
 // Page definitions
 const Pages = {
     landing() {
+        // Check if user has data to determine CTA text
+        const hasData = localStorage.getItem('happinessRatings') || localStorage.getItem('mediaEntries');
+        const ctaText = hasData ? 'Dashboard' : 'Get Started';
+        
         return `
             <div class="onboarding">
                 <div class="onboarding-content">
@@ -9,7 +13,7 @@ const Pages = {
                         Track your daily media consumption and happiness levels to discover patterns and insights about how what you watch, read, and listen to affects your well-being.
                     </p>
                     <div class="onboarding-buttons">
-                        <button onclick="Router.navigate('/dashboard')" class="action-button">Get Started</button>
+                        <button onclick="Router.navigate('/dashboard')" class="action-button">${ctaText}</button>
                         <button onclick="Router.navigate('/example')" class="action-button secondary-button">See an Example</button>
                     </div>
                 </div>
