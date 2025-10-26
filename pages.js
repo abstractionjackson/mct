@@ -26,8 +26,6 @@ const Pages = {
         return `
             ${this._navbar(false)}
             <div class="container">
-                <h1>Media & Happiness Tracker</h1>
-                
                 <div class="action-buttons">
                     <button id="openHappinessModal" class="action-button">Add Happiness Entry</button>
                     <button id="openMediaModal" class="action-button">Add Media Entry</button>
