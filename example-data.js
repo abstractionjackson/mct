@@ -55,13 +55,6 @@ function loadExampleData() {
     localStorage.setItem(SOURCES_KEY, JSON.stringify(Array.from(sourceMap.values())));
     
     console.log(`Loaded ${exampleHappiness.length} happiness ratings, ${exampleMedia.length} media entries, and ${sourceMap.size} sources`);
-    
-    // Reload the page to show the data
-    if (typeof render === 'function') {
-        render();
-    } else {
-        window.location.reload();
-    }
 }
 
 // Auto-load if localStorage is empty - removed, now handled by router

@@ -376,6 +376,8 @@ function updateHappinessButton() {
 // Visualization
 function drawChart(happiness, media) {
     const canvas = document.getElementById('chart');
+    if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.offsetWidth;
     const height = canvas.height = canvas.offsetHeight;
