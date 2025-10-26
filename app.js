@@ -649,6 +649,27 @@ Router.register('/landing', () => {
 });
 
 Router.register('/dashboard', () => {
+    // Restore user data if coming back from example
+    const savedHappiness = sessionStorage.getItem('savedHappiness');
+    const savedMedia = sessionStorage.getItem('savedMedia');
+    const savedSources = sessionStorage.getItem('savedSources');
+    
+    if (savedHappiness || savedMedia) {
+        // Restore the user's data
+        if (savedHappiness) {
+            localStorage.setItem(HAPPINESS_KEY, savedHappiness);
+            sessionStorage.removeItem('savedHappiness');
+        }
+        if (savedMedia) {
+            localStorage.setItem(MEDIA_KEY, savedMedia);
+            sessionStorage.removeItem('savedMedia');
+        }
+        if (savedSources) {
+            localStorage.setItem(SOURCES_KEY, savedSources);
+            sessionStorage.removeItem('savedSources');
+        }
+    }
+    
     document.getElementById('root').innerHTML = Pages.dashboard();
     setupFormHandlers();
     setupModalHandlers();
@@ -663,10 +684,22 @@ window.clearDataAndNavigate = function() {
 };
 
 Router.register('/example', () => {
-    // Load example data if not already loaded
-    if (loadHappiness().length === 0 && loadMedia().length === 0) {
-        loadExampleData();
+    // Save user's current data temporarily
+    const userHappiness = loadHappiness();
+    const userMedia = loadMedia();
+    const userSources = loadSources();
+    
+    // Store in sessionStorage so we can restore it
+    if (userHappiness.length > 0 || userMedia.length > 0) {
+        sessionStorage.setItem('savedHappiness', JSON.stringify(userHappiness));
+        sessionStorage.setItem('savedMedia', JSON.stringify(userMedia));
+        sessionStorage.setItem('savedSources', JSON.stringify(userSources));
     }
+    
+    // Clear and load example data
+    clearAllData();
+    loadExampleData();
+    
     document.getElementById('root').innerHTML = Pages.example();
     setupFormHandlers();
     setupModalHandlers();

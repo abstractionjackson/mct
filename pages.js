@@ -20,6 +20,10 @@ const Pages = {
     dashboard() {
         return `
             <div class="container">
+                <div class="nav-buttons">
+                    <button onclick="Router.navigate('/example')" class="action-button secondary-button">View Example</button>
+                </div>
+                
                 <h1>Media & Happiness Tracker</h1>
                 
                 <div class="action-buttons">
@@ -38,8 +42,7 @@ const Pages = {
         return `
             <div class="container">
                 <div class="nav-buttons">
-                    <button onclick="Router.navigate('/landing')" class="action-button secondary-button">← Back to Landing</button>
-                    <button onclick="clearDataAndNavigate()" class="action-button">Start Fresh →</button>
+                    <button onclick="Router.navigate('/dashboard')" class="action-button secondary-button">← Back to Dashboard</button>
                 </div>
                 
                 <h1>Media & Happiness Tracker <span class="demo-badge">(Example)</span></h1>
