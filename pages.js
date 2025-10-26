@@ -39,7 +39,7 @@ const Pages = {
             <div class="container">
                 <div class="nav-buttons">
                     <button onclick="Router.navigate('/landing')" class="action-button secondary-button">← Back to Landing</button>
-                    <button onclick="Router.navigate('/dashboard')" class="action-button">Start Fresh →</button>
+                    <button onclick="clearDataAndNavigate()" class="action-button">Start Fresh →</button>
                 </div>
                 
                 <h1>Media & Happiness Tracker <span class="demo-badge">(Example)</span></h1>

@@ -30,6 +30,12 @@ function saveSources(sources) {
     localStorage.setItem(SOURCES_KEY, JSON.stringify(sources));
 }
 
+function clearAllData() {
+    localStorage.removeItem(HAPPINESS_KEY);
+    localStorage.removeItem(MEDIA_KEY);
+    localStorage.removeItem(SOURCES_KEY);
+}
+
 function addOrUpdateSource(name, type) {
     const sources = loadSources();
     const existing = sources.find(s => s.name === name && s.type === type);
@@ -639,6 +645,12 @@ Router.register('/dashboard', () => {
     render();
     updateHappinessButton();
 });
+
+// Helper function to clear data and navigate
+window.clearDataAndNavigate = function() {
+    clearAllData();
+    Router.navigate('/dashboard');
+};
 
 Router.register('/example', () => {
     // Load example data if not already loaded
