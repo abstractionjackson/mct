@@ -631,10 +631,20 @@ function updateHappinessButton() {
 
 // Router setup
 Router.register('/', () => {
+    // If user has data, go straight to dashboard
+    if (loadHappiness().length > 0 || loadMedia().length > 0) {
+        Router.navigate('/dashboard');
+        return;
+    }
     document.getElementById('root').innerHTML = Pages.landing();
 });
 
 Router.register('/landing', () => {
+    // If user has data, go straight to dashboard
+    if (loadHappiness().length > 0 || loadMedia().length > 0) {
+        Router.navigate('/dashboard');
+        return;
+    }
     document.getElementById('root').innerHTML = Pages.landing();
 });
 
