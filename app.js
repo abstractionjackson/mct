@@ -441,23 +441,22 @@ function drawChart(happiness, media) {
     ctx.fillStyle = '#000';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Happiness Level', width / 2, height - 10);
+    ctx.fillText('Average Media Duration (minutes)', width / 2, height - 10);
     
     ctx.save();
     ctx.translate(15, height / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Average Duration (minutes)', 0, 0);
+    ctx.fillText('Happiness Level', 0, 0);
     ctx.restore();
     
-    // Draw duration scale (Y axis)
+    // Draw happiness scale (Y axis)
     ctx.fillStyle = '#666';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right';
-    const durationSteps = 5;
-    for (let i = 0; i <= durationSteps; i++) {
-        const dur = (maxDuration / durationSteps) * i;
-        const y = height - padding - (i / durationSteps) * chartHeight;
-        ctx.fillText(Math.round(dur).toString(), padding - 10, y + 3);
+    
+    happinessLevels.forEach((level, index) => {
+        const y = height - padding - (index / (happinessLevels.length - 1)) * chartHeight;
+        ctx.fillText(level.toString(), padding - 10, y + 3);
         
         // Grid lines
         ctx.strokeStyle = '#eee';
@@ -466,32 +465,36 @@ function drawChart(happiness, media) {
         ctx.moveTo(padding, y);
         ctx.lineTo(width - padding, y);
         ctx.stroke();
+    });
+    
+    // Draw duration scale (X axis)
+    ctx.textAlign = 'center';
+    const durationSteps = 5;
+    for (let i = 0; i <= durationSteps; i++) {
+        const dur = (maxDuration / durationSteps) * i;
+        const x = padding + (i / durationSteps) * chartWidth;
+        ctx.fillText(Math.round(dur).toString(), x, height - padding + 20);
     }
     
-    // Draw bars
-    const barWidth = chartWidth / (happinessLevels.length * 1.5);
-    const barSpacing = chartWidth / happinessLevels.length;
+    // Draw horizontal bars
+    const barHeight = chartHeight / (happinessLevels.length * 1.5);
     
     happinessLevels.forEach((level, index) => {
         const duration = avgDurationByHappiness[level];
-        const barHeight = (duration / maxDuration) * chartHeight;
-        const x = padding + (index * barSpacing) + (barSpacing - barWidth) / 2;
-        const y = height - padding - barHeight;
+        const barWidth = (duration / maxDuration) * chartWidth;
+        const y = height - padding - (index / (happinessLevels.length - 1)) * chartHeight - barHeight / 2;
+        const x = padding;
         
         // Draw bar
         ctx.fillStyle = '#000';
         ctx.fillRect(x, y, barWidth, barHeight);
         
-        // Draw happiness level label
-        ctx.fillStyle = '#000';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(level.toString(), x + barWidth / 2, height - padding + 20);
-        
-        // Draw value on top of bar if there's data
+        // Draw value at end of bar if there's data
         if (duration > 0) {
+            ctx.fillStyle = '#000';
             ctx.font = '10px sans-serif';
-            ctx.fillText(Math.round(duration).toString(), x + barWidth / 2, y - 5);
+            ctx.textAlign = 'left';
+            ctx.fillText(Math.round(duration).toString(), x + barWidth + 5, y + barHeight / 2 + 3);
         }
     });
 }
