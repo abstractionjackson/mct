@@ -190,8 +190,7 @@ function deleteMedia(id) {
 function setupFormHandlers() {
     const happinessForm = document.getElementById('happinessForm');
     const mediaForm = document.getElementById('mediaForm');
-    const mediaSearch = document.getElementById('mediaSearch');
-    const mediaFormat = document.getElementById('mediaFormat');
+    const sourceForm = document.getElementById('sourceForm');
     
     if (!happinessForm || !mediaForm) return;
     
@@ -201,6 +200,11 @@ function setupFormHandlers() {
     
     const newMediaForm = mediaForm.cloneNode(true);
     mediaForm.parentNode.replaceChild(newMediaForm, mediaForm);
+    
+    if (sourceForm) {
+        const newSourceForm = sourceForm.cloneNode(true);
+        sourceForm.parentNode.replaceChild(newSourceForm, sourceForm);
+    }
     
     document.getElementById('happinessForm').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -231,27 +235,39 @@ function setupFormHandlers() {
         updateHappinessButton();
     });
 
+    // Media entry form - simplified to just select source and duration
     document.getElementById('mediaForm').addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const name = document.getElementById('mediaName').value;
-        const format = document.getElementById('mediaFormat').value;
-        const imageUrl = document.getElementById('mediaImageUrl')?.value || document.getElementById('mediaImageData')?.value || null;
-        const reference = document.getElementById('mediaReference')?.value || null;
+        const sourceName = document.getElementById('selectedSourceName').value;
+        const sourceType = document.getElementById('selectedSourceType').value;
+        
+        if (!sourceName || !sourceType) {
+            alert('Please select a media source');
+            return;
+        }
         
         const entry = {
-            name: name,
-            type: format,
+            name: sourceName,
+            type: sourceType,
             duration: parseInt(document.getElementById('duration').value),
             date: document.getElementById('mediaDate').value
         };
         
         addMedia(entry);
-        addOrUpdateSource(name, format, imageUrl, reference);
+        
+        // Update source last used
+        const sources = loadSources();
+        const source = sources.find(s => s.name === sourceName && s.type === sourceType);
+        if (source) {
+            source.lastUsed = new Date().toISOString();
+            source.useCount = (source.useCount || 0) + 1;
+            saveSources(sources);
+        }
         
         e.target.reset();
-        document.getElementById('searchResults').innerHTML = '';
-        document.getElementById('suggestedSources').innerHTML = '';
+        document.getElementById('sourceSearchResults').innerHTML = '';
+        document.getElementById('recentSources').innerHTML = '';
         
         // Reset date to today for next open
         const today = getDateString(new Date());
@@ -261,66 +277,119 @@ function setupFormHandlers() {
         render();
     });
 
-    // Format change handler - enable/disable search
-    document.getElementById('mediaFormat').addEventListener('change', (e) => {
-        const format = e.target.value;
-        const searchInput = document.getElementById('mediaSearch');
-        
-        if (format && format !== 'Other') {
-            searchInput.disabled = false;
-            searchInput.placeholder = `Search for ${format.toLowerCase()}...`;
-        } else {
-            searchInput.disabled = true;
-            searchInput.placeholder = 'Select a format to search';
-            searchInput.value = '';
-            document.getElementById('searchResults').innerHTML = '';
-        }
-    });
-
-    // Media search functionality - API-based
-    let searchTimeout;
-    document.getElementById('mediaSearch').addEventListener('input', async (e) => {
+    // Source search in media form
+    document.getElementById('sourceSearch').addEventListener('input', (e) => {
         const query = e.target.value.trim();
-        const format = document.getElementById('mediaFormat').value;
         
-        clearTimeout(searchTimeout);
-        
-        if (query.length < 2 || !format) {
-            document.getElementById('searchResults').innerHTML = '';
+        if (query.length < 2) {
+            document.getElementById('sourceSearchResults').innerHTML = '';
+            showRecentSources();
             return;
         }
         
-        document.getElementById('searchResults').innerHTML = '<div class="search-loading">Searching...</div>';
+        const results = searchSources(query);
         
-        searchTimeout = setTimeout(async () => {
-            const results = await searchMediaByFormat(format, query);
+        if (results.length === 0) {
+            document.getElementById('sourceSearchResults').innerHTML = '<div class="search-result-empty">No matches found. Add a new source below.</div>';
+            return;
+        }
+        
+        document.getElementById('sourceSearchResults').innerHTML = results.map(source => `
+            <div class="source-result" onclick="selectSourceForEntry('${source.name.replace(/'/g, "\\'")}', '${source.type}')">
+                ${source.imageUrl ? `<img src="${source.imageUrl}" alt="${source.name}" class="source-result-image">` : ''}
+                <div class="source-result-info">
+                    <strong>${source.name}</strong>
+                    <div class="source-result-type">${source.type}</div>
+                </div>
+            </div>
+        `).join('');
+    });
+
+    // Source form - for adding new sources with API integration
+    if (document.getElementById('sourceForm')) {
+        document.getElementById('sourceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            if (results.length === 0) {
-                document.getElementById('searchResults').innerHTML = '<div class="search-result-empty">No matches found. Enter details manually below.</div>';
+            const name = document.getElementById('sourceName').value;
+            const format = document.getElementById('sourceFormat').value;
+            const imageUrl = document.getElementById('sourceImageUrl')?.value || document.getElementById('sourceImageData')?.value || null;
+            const reference = document.getElementById('sourceReference')?.value || null;
+            
+            addOrUpdateSource(name, format, imageUrl, reference);
+            
+            e.target.reset();
+            document.getElementById('apiSearchResults').innerHTML = '';
+            
+            closeModal('sourceModal');
+            
+            // Auto-select the newly added source in media form if it's open
+            if (document.getElementById('mediaModal').style.display !== 'none') {
+                selectSourceForEntry(name, format);
+                showRecentSources();
+            }
+        });
+
+        // Format change handler for source form
+        document.getElementById('sourceFormat').addEventListener('change', (e) => {
+            const format = e.target.value;
+            const searchInput = document.getElementById('sourceAPISearch');
+            
+            if (format && format !== 'Other') {
+                searchInput.disabled = false;
+                searchInput.placeholder = `Search for ${format.toLowerCase()}...`;
+            } else {
+                searchInput.disabled = true;
+                searchInput.placeholder = 'Select a format to search';
+                searchInput.value = '';
+                document.getElementById('apiSearchResults').innerHTML = '';
+            }
+        });
+
+        // API search in source form
+        let searchTimeout;
+        document.getElementById('sourceAPISearch').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            const format = document.getElementById('sourceFormat').value;
+            
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2 || !format) {
+                document.getElementById('apiSearchResults').innerHTML = '';
                 return;
             }
             
-            document.getElementById('searchResults').innerHTML = results.map((result, index) => {
-                let subtitle = '';
-                if (format === 'Book') {
-                    subtitle = `${result.author}${result.year ? ` (${result.year})` : ''}`;
+            document.getElementById('apiSearchResults').innerHTML = '<div class="search-loading">Searching...</div>';
+            
+            searchTimeout = setTimeout(async () => {
+                const results = await searchMediaByFormat(format, query);
+                
+                if (results.length === 0) {
+                    document.getElementById('apiSearchResults').innerHTML = '<div class="search-result-empty">No matches found. Enter details manually below.</div>';
+                    return;
                 }
                 
-                return `
-                    <div class="search-result" onclick="selectAPIResult(${index})">
-                        ${result.coverUrl ? `<img src="${result.coverUrl}" alt="${result.title}" class="search-result-image">` : ''}
-                        <div class="search-result-info">
-                            <strong>${result.title}</strong>
-                            ${subtitle ? `<div class="search-result-subtitle">${subtitle}</div>` : ''}
+                document.getElementById('apiSearchResults').innerHTML = results.map((result, index) => {
+                    let subtitle = '';
+                    if (format === 'Book') {
+                        subtitle = `${result.author}${result.year ? ` (${result.year})` : ''}`;
+                    }
+                    
+                    return `
+                        <div class="search-result" onclick="selectAPIResultForSource(${index})">
+                            ${result.coverUrl ? `<img src="${result.coverUrl}" alt="${result.title}" class="search-result-image">` : ''}
+                            <div class="search-result-info">
+                                <strong>${result.title}</strong>
+                                ${subtitle ? `<div class="search-result-subtitle">${subtitle}</div>` : ''}
+                            </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Store results for selection
-            window.currentSearchResults = results;
-        }, 500);
-    });
+                    `;
+                }).join('');
+                
+                // Store results for selection
+                window.currentSourceAPIResults = results;
+            }, 500);
+        });
+    }
 
     // Set default dates to today
     const today = getDateString(new Date());
@@ -337,7 +406,121 @@ function setupFormHandlers() {
         });
         happinessValue.textContent = happinessSlider.value;
     }
+    
+    // Show recent sources when media modal opens
+    showRecentSources();
 }
+
+function selectAPIResultForSource(index) {
+    const result = window.currentSourceAPIResults[index];
+    
+    document.getElementById('sourceName').value = result.title;
+    
+    if (result.coverUrl) {
+        document.getElementById('sourceImageUrl').value = result.coverUrl;
+    }
+    
+    if (result.reference) {
+        document.getElementById('sourceReference').value = JSON.stringify(result.reference);
+    }
+    
+    document.getElementById('sourceAPISearch').value = '';
+    document.getElementById('apiSearchResults').innerHTML = '';
+    document.getElementById('sourceName').focus();
+}
+
+window.selectAPIResultForSource = selectAPIResultForSource;
+
+function selectSourceForEntry(name, type) {
+    document.getElementById('selectedSourceName').value = name;
+    document.getElementById('selectedSourceType').value = type;
+    document.getElementById('sourceSearch').value = '';
+    document.getElementById('sourceSearchResults').innerHTML = '';
+    
+    // Show selected source
+    const sources = loadSources();
+    const source = sources.find(s => s.name === name && s.type === type);
+    
+    if (source) {
+        const display = `
+            <div class="selected-source">
+                ${source.imageUrl ? `<img src="${source.imageUrl}" alt="${name}" class="selected-source-image">` : ''}
+                <div>
+                    <strong>${name}</strong>
+                    <div class="source-type">${type}</div>
+                </div>
+                <button type="button" onclick="clearSelectedSource()" class="clear-selection">×</button>
+            </div>
+        `;
+        document.getElementById('recentSources').innerHTML = display;
+    }
+    
+    document.getElementById('duration').focus();
+}
+
+window.selectSourceForEntry = selectSourceForEntry;
+
+function clearSelectedSource() {
+    document.getElementById('selectedSourceName').value = '';
+    document.getElementById('selectedSourceType').value = '';
+    showRecentSources();
+}
+
+window.clearSelectedSource = clearSelectedSource;
+
+function showRecentSources() {
+    const recent = getRecentSources(10);
+    
+    if (recent.length === 0) {
+        document.getElementById('recentSources').innerHTML = '<p class="no-sources">No media sources yet. Add one to get started!</p>';
+        return;
+    }
+    
+    document.getElementById('recentSources').innerHTML = `
+        <div class="recent-sources-label">Recent Sources:</div>
+        <div class="recent-sources-grid">
+            ${recent.map(source => `
+                <div class="source-card" onclick="selectSourceForEntry('${source.name.replace(/'/g, "\\'")}', '${source.type}')">
+                    ${source.imageUrl ? `<img src="${source.imageUrl}" alt="${source.name}" class="source-card-image">` : '<div class="source-card-placeholder"></div>'}
+                    <div class="source-card-name">${source.name}</div>
+                    <div class="source-card-type">${source.type}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+window.showRecentSources = showRecentSources;
+
+function openAddSourceModal() {
+    closeModal('mediaModal');
+    openModal('sourceModal');
+}
+
+window.openAddSourceModal = openAddSourceModal;
+
+function handleSourceImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 500000) {
+        alert('Image too large. Please choose an image under 500KB.');
+        event.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('sourceImageData').value = e.target.result;
+        document.getElementById('sourceImageUrl').value = '';
+        
+        const label = event.target.parentElement.querySelector('.file-upload-text');
+        if (label) label.textContent = file.name;
+    };
+    reader.readAsDataURL(file);
+}
+
+window.handleSourceImageUpload = handleSourceImageUpload;
 
 function selectAPIResult(index) {
     const result = window.currentSearchResults[index];
@@ -429,6 +612,7 @@ window.handleClearSources = function() {
 function setupModalHandlers() {
     const openHappinessBtn = document.getElementById('openHappinessModal');
     const openMediaBtn = document.getElementById('openMediaModal');
+    const openSourceBtn = document.getElementById('openSourceModal');
     const confirmDeleteBtn = document.getElementById('confirmDelete');
     const cancelDeleteBtn = document.getElementById('cancelDelete');
     
@@ -446,8 +630,18 @@ function setupModalHandlers() {
             // Reset date to today when opening
             const today = getDateString(new Date());
             document.getElementById('mediaDate').value = today;
-            renderSuggestedSources();
+            document.getElementById('sourceSearch').value = '';
+            document.getElementById('sourceSearchResults').innerHTML = '';
+            document.getElementById('selectedSourceName').value = '';
+            document.getElementById('selectedSourceType').value = '';
+            showRecentSources();
             openModal('mediaModal');
+        };
+    }
+    
+    if (openSourceBtn) {
+        openSourceBtn.onclick = () => {
+            openModal('sourceModal');
         };
     }
     

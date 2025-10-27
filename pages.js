@@ -29,6 +29,7 @@ const Pages = {
                 <div class="action-buttons">
                     <button id="openHappinessModal" class="action-button">Add Happiness Entry</button>
                     <button id="openMediaModal" class="action-button">Add Media Entry</button>
+                    <button id="openSourceModal" class="action-button secondary-button">Add New Source</button>
                 </div>
 
                 ${this._modals()}
@@ -163,11 +164,46 @@ const Pages = {
                     <form id="mediaForm">
                         <h2>Add Media Entry</h2>
                         
-                        <div id="suggestedSources"></div>
+                        <label>
+                            Select Source:
+                            <input type="text" id="sourceSearch" placeholder="Search your media sources...">
+                        </label>
+                        
+                        <div id="recentSources" class="recent-sources"></div>
+                        <div id="sourceSearchResults" class="source-search-results"></div>
+                        
+                        <div class="form-divider">
+                            <span>Don't see your source?</span>
+                            <button type="button" class="action-button secondary-button" onclick="openAddSourceModal()">Add New Source</button>
+                        </div>
+                        
+                        <input type="hidden" id="selectedSourceName">
+                        <input type="hidden" id="selectedSourceType">
+                        
+                        <label>
+                            Duration (minutes):
+                            <input type="number" id="duration" min="1" required>
+                        </label>
+                        
+                        <label>
+                            Date:
+                            <input type="date" id="mediaDate" required>
+                        </label>
+                        
+                        <button type="submit">Add Entry</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="sourceModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" data-modal="sourceModal">&times;</span>
+                    <form id="sourceForm">
+                        <h2>Add New Media Source</h2>
                         
                         <label>
                             Format:
-                            <select id="mediaFormat" required>
+                            <select id="sourceFormat" required>
                                 <option value="">Select format</option>
                                 <option value="Book">Book</option>
                                 <option value="Movie">Movie</option>
@@ -182,44 +218,34 @@ const Pages = {
                         </label>
                         
                         <label>
-                            Search Media:
-                            <input type="text" id="mediaSearch" placeholder="Search for book, movie, etc...">
+                            Search:
+                            <input type="text" id="sourceAPISearch" placeholder="Search for book, movie, etc..." disabled>
                         </label>
                         
-                        <div id="searchResults"></div>
+                        <div id="apiSearchResults"></div>
                         
                         <div class="form-divider">OR enter manually</div>
                         
                         <label>
-                            Media Name:
-                            <input type="text" id="mediaName" required>
+                            Name:
+                            <input type="text" id="sourceName" required>
                         </label>
                         
                         <div class="image-input-group">
                             <label>
                                 Image URL:
-                                <input type="url" id="mediaImageUrl" placeholder="https://example.com/image.jpg">
+                                <input type="url" id="sourceImageUrl" placeholder="https://example.com/image.jpg">
                             </label>
                             <span class="input-separator">OR</span>
                             <label class="file-upload-label">
-                                <input type="file" id="mediaImageFile" accept="image/*" onchange="handleImageUpload(event)">
+                                <input type="file" id="sourceImageFile" accept="image/*" onchange="handleSourceImageUpload(event)">
                                 <span class="file-upload-text">Choose Image</span>
                             </label>
-                            <input type="hidden" id="mediaImageData">
-                            <input type="hidden" id="mediaReference">
+                            <input type="hidden" id="sourceImageData">
+                            <input type="hidden" id="sourceReference">
                         </div>
                         
-                        <label>
-                            Duration (minutes):
-                            <input type="number" id="duration" min="1" required>
-                        </label>
-                        
-                        <label>
-                            Date:
-                            <input type="date" id="mediaDate" required>
-                        </label>
-                        
-                        <button type="submit">Add Media</button>
+                        <button type="submit">Add Source</button>
                     </form>
                 </div>
             </div>

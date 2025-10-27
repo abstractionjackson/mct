@@ -709,6 +709,144 @@ button:hover {
     margin-bottom: 15px;
 }
 
+/* Recent Sources Display */
+.recent-sources-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.recent-sources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.source-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.source-card:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+}
+
+.source-card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 8px;
+}
+
+.source-card-placeholder {
+    width: 100%;
+    height: 150px;
+    background-color: #e0e0e0;
+    margin-bottom: 8px;
+}
+
+.source-card-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.source-card-type {
+    font-size: 12px;
+    color: #666;
+}
+
+.no-sources {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* Selected Source Display */
+.selected-source {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 2px solid #4CAF50;
+    background-color: #f0f8f0;
+    margin-bottom: 15px;
+}
+
+.selected-source-image {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.source-type {
+    color: #666;
+    font-size: 13px;
+}
+
+.clear-selection {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0 5px;
+}
+
+.clear-selection:hover {
+    color: #333;
+}
+
+/* Source Search Results */
+.source-result {
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    margin-bottom: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.source-result:hover {
+    background: #f5f5f5;
+}
+
+.source-result-image {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.source-result-info {
+    flex: 1;
+}
+
+.source-result-type {
+    color: #666;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.source-search-results {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
 .search-loading {
     padding: 10px;
     text-align: center;
