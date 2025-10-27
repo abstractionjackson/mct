@@ -71,8 +71,28 @@ function deleteSource(name, type) {
     saveSources(filtered);
 }
 
+function removeSourceFromRecents(name, type) {
+    const sources = loadSources();
+    const source = sources.find(s => s.name === name && s.type === type);
+    if (source) {
+        source.useCount = 0;
+        source.lastUsed = null;
+        saveSources(sources);
+    }
+}
+
 function clearAllSources() {
     saveSources([]);
+}
+
+function clearRecentSourcesUsage() {
+    const sources = loadSources();
+    // Reset usage count and lastUsed for all sources, but keep the sources themselves
+    sources.forEach(s => {
+        s.useCount = 0;
+        s.lastUsed = null;
+    });
+    saveSources(sources);
 }
 
 function searchSources(query) {
@@ -316,13 +336,13 @@ function renderSuggestedSources() {
 }
 
 window.handleRemoveSource = function(name, type) {
-    deleteSource(name, type);
+    removeSourceFromRecents(name, type);
     renderSuggestedSources();
 };
 
 window.handleClearSources = function() {
-    if (confirm('Clear all recent sources?')) {
-        clearAllSources();
+    if (confirm('Clear recent sources list? (Sources will still be available via search)')) {
+        clearRecentSourcesUsage();
         renderSuggestedSources();
     }
 };
