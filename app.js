@@ -61,6 +61,7 @@ function addOrUpdateSource(name, type, imageUrl = null) {
 function getRecentSources(limit = 5) {
     const sources = loadSources();
     return sources
+        .filter(s => s.lastUsed != null) // Only include sources that have been used
         .sort((a, b) => new Date(b.lastUsed) - new Date(a.lastUsed))
         .slice(0, limit);
 }
