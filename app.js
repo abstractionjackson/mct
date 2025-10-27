@@ -201,6 +201,11 @@ function setupFormHandlers() {
         setTimeout(() => {
             message.textContent = '';
             message.className = '';
+            
+            // Reset date to today for next open
+            const today = getDateString(new Date());
+            document.getElementById('happinessDate').value = today;
+            
             closeModal('happinessModal');
         }, 2000);
         
@@ -228,6 +233,11 @@ function setupFormHandlers() {
         e.target.reset();
         document.getElementById('searchResults').innerHTML = '';
         document.getElementById('suggestedSources').innerHTML = '';
+        
+        // Reset date to today for next open
+        const today = getDateString(new Date());
+        document.getElementById('mediaDate').value = today;
+        
         closeModal('mediaModal');
         render();
     });
@@ -361,11 +371,19 @@ function setupModalHandlers() {
     const cancelDeleteBtn = document.getElementById('cancelDelete');
     
     if (openHappinessBtn) {
-        openHappinessBtn.onclick = () => openModal('happinessModal');
+        openHappinessBtn.onclick = () => {
+            // Reset date to today when opening
+            const today = getDateString(new Date());
+            document.getElementById('happinessDate').value = today;
+            openModal('happinessModal');
+        };
     }
     
     if (openMediaBtn) {
         openMediaBtn.onclick = () => {
+            // Reset date to today when opening
+            const today = getDateString(new Date());
+            document.getElementById('mediaDate').value = today;
             renderSuggestedSources();
             openModal('mediaModal');
         };
