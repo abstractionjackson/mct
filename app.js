@@ -355,9 +355,12 @@ function setupFormHandlers() {
             const query = e.target.value.trim();
             const format = document.getElementById('sourceFormat').value;
             
+            console.log('Search triggered:', { query, format });
+            
             clearTimeout(searchTimeout);
             
             if (query.length < 2 || !format) {
+                console.log('Search skipped: query too short or no format selected');
                 document.getElementById('apiSearchResults').innerHTML = '';
                 return;
             }
@@ -365,7 +368,10 @@ function setupFormHandlers() {
             document.getElementById('apiSearchResults').innerHTML = '<div class="search-loading">Searching...</div>';
             
             searchTimeout = setTimeout(async () => {
+                console.log('Calling searchMediaByFormat:', format, query);
                 const results = await searchMediaByFormat(format, query);
+                
+                console.log('Results returned from searchMediaByFormat:', results);
                 
                 if (results.length === 0) {
                     document.getElementById('apiSearchResults').innerHTML = '<div class="search-result-empty">No matches found. Enter details manually below.</div>';
@@ -390,6 +396,8 @@ function setupFormHandlers() {
                         </div>
                     `;
                 }).join('');
+                
+                console.log('Rendered', results.length, 'results to DOM');
                 
                 // Store results for selection
                 window.currentSourceAPIResults = results;
