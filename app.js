@@ -828,10 +828,15 @@ Router.register('/dashboard', () => {
     setupModalHandlers();
     render();
     updateHappinessButton();
-    
-    
-    alert(`Imported ${videos.length} video${videos.length > 1 ? 's' : ''} successfully!`);
-}
+});
+
+Router.register('/admin', () => {
+    document.getElementById('root').innerHTML = Pages.admin();
+});
+
+Router.register('/admin', () => {
+    document.getElementById('root').innerHTML = Pages.admin();
+});
 
 // Helper function to clear data and navigate
 window.clearDataAndNavigate = function() {
