@@ -300,7 +300,12 @@ window.selectSource = selectSource;
 
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'block';
+    if (modal) {
+        modal.style.display = 'block';
+        // Scroll modal content to top
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) modalContent.scrollTop = 0;
+    }
 }
 
 function closeModal(modalId) {
