@@ -307,6 +307,8 @@ function setupFormHandlers() {
 
     // Source form - for adding new sources with API integration
     if (document.getElementById('sourceForm')) {
+        console.log('Source form found, setting up handlers');
+        
         document.getElementById('sourceForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -338,6 +340,8 @@ function setupFormHandlers() {
             const format = e.target.value;
             const searchInput = document.getElementById('sourceAPISearch');
             
+            console.log('Format changed:', format, 'Search input found:', !!searchInput);
+            
             if (format && format !== 'Other') {
                 searchInput.disabled = false;
                 searchInput.placeholder = `Search for ${format.toLowerCase()}...`;
@@ -350,8 +354,11 @@ function setupFormHandlers() {
         });
 
         // API search in source form
+        const sourceAPISearchInput = document.getElementById('sourceAPISearch');
+        console.log('Setting up API search listener, input found:', !!sourceAPISearchInput);
+        
         let searchTimeout;
-        document.getElementById('sourceAPISearch').addEventListener('input', async (e) => {
+        sourceAPISearchInput.addEventListener('input', async (e) => {
             const query = e.target.value.trim();
             const format = document.getElementById('sourceFormat').value;
             
