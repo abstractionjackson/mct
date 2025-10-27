@@ -3,10 +3,15 @@
 // Open Library API for books
 async function searchBooks(query) {
     try {
-        const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`);
+        const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`;
+        console.log('Open Library API request:', url);
+        
+        const response = await fetch(url);
         const data = await response.json();
         
-        return data.docs.map(book => ({
+        console.log('Open Library API response:', data);
+        
+        const results = data.docs.map(book => ({
             title: book.title,
             author: book.author_name?.[0] || 'Unknown Author',
             year: book.first_publish_year,
@@ -17,6 +22,9 @@ async function searchBooks(query) {
                 isbn: book.isbn?.[0]
             }
         }));
+        
+        console.log('Parsed book results:', results);
+        return results;
     } catch (error) {
         console.error('Open Library search failed:', error);
         return [];
@@ -29,14 +37,20 @@ async function searchMovies(query) {
         // Using free OMDb API - you can get a key from http://www.omdbapi.com/
         // For demo purposes, using a public key (limited requests)
         const apiKey = '3e6e4b0e'; // Get your own key for production
-        const response = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}&type=movie`);
+        const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}&type=movie`;
+        console.log('OMDb API request:', url);
+        
+        const response = await fetch(url);
         const data = await response.json();
         
+        console.log('OMDb API response:', data);
+        
         if (data.Response === 'False' || !data.Search) {
+            console.log('No movies found or error:', data.Error);
             return [];
         }
         
-        return data.Search.map(movie => ({
+        const results = data.Search.map(movie => ({
             title: movie.Title,
             author: movie.Year,
             year: movie.Year,
@@ -46,6 +60,9 @@ async function searchMovies(query) {
                 imdbID: movie.imdbID
             }
         }));
+        
+        console.log('Parsed movie results:', results);
+        return results;
     } catch (error) {
         console.error('OMDb search failed:', error);
         return [];
