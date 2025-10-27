@@ -34,9 +34,7 @@ async function searchBooks(query) {
 // OMDb API for movies (requires API key from http://www.omdbapi.com/)
 async function searchMovies(query) {
     try {
-        // Using free OMDb API - you can get a key from http://www.omdbapi.com/
-        // For demo purposes, using a public key (limited requests)
-        const apiKey = '3e6e4b0e'; // Get your own key for production
+        const apiKey = 'e7b0f735';
         const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}&type=movie`;
         console.log('OMDb API request:', url);
         
