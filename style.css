@@ -709,15 +709,43 @@ button:hover {
     margin-bottom: 15px;
 }
 
+.search-loading {
+    padding: 10px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
 .search-result {
     padding: 10px;
     border: 1px solid #ccc;
     cursor: pointer;
     margin-bottom: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
 }
 
 .search-result:hover {
     background: #f5f5f5;
+}
+
+.search-result-image {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.search-result-info {
+    flex: 1;
+}
+
+.search-result-subtitle {
+    color: #666;
+    font-size: 13px;
+    margin-top: 4px;
 }
 
 .result-type {

@@ -166,32 +166,33 @@ const Pages = {
                         <div id="suggestedSources"></div>
                         
                         <label>
-                            Search Media:
-                            <input type="text" id="mediaSearch" placeholder="Search existing media...">
-                        </label>
-                        
-                        <div id="searchResults"></div>
-                        
-                        <div class="form-divider">OR</div>
-                        
-                        <label>
-                            Media Name:
-                            <input type="text" id="mediaName" required>
-                        </label>
-                        
-                        <label>
-                            Type:
-                            <select id="mediaType" required>
-                                <option value="">Select type</option>
+                            Format:
+                            <select id="mediaFormat" required>
+                                <option value="">Select format</option>
+                                <option value="Book">Book</option>
                                 <option value="Movie">Movie</option>
                                 <option value="TV Show">TV Show</option>
-                                <option value="Book">Book</option>
-                                <option value="Podcast">Podcast</option>
                                 <option value="Music">Music</option>
+                                <option value="Video">Video</option>
+                                <option value="Podcast">Podcast</option>
                                 <option value="Video Game">Video Game</option>
                                 <option value="Article">Article</option>
                                 <option value="Other">Other</option>
                             </select>
+                        </label>
+                        
+                        <label>
+                            Search Media:
+                            <input type="text" id="mediaSearch" placeholder="Search for book, movie, etc...">
+                        </label>
+                        
+                        <div id="searchResults"></div>
+                        
+                        <div class="form-divider">OR enter manually</div>
+                        
+                        <label>
+                            Media Name:
+                            <input type="text" id="mediaName" required>
                         </label>
                         
                         <div class="image-input-group">
@@ -205,6 +206,7 @@ const Pages = {
                                 <span class="file-upload-text">Choose Image</span>
                             </label>
                             <input type="hidden" id="mediaImageData">
+                            <input type="hidden" id="mediaReference">
                         </div>
                         
                         <label>
