@@ -588,7 +588,7 @@ function renderEntries(happiness, media) {
         const totalDuration = data.media.reduce((sum, m) => sum + m.duration, 0);
         const happinessText = data.happiness !== null 
             ? `Happiness: ${data.happiness} <button class="delete-btn" onclick="handleDeleteHappiness('${date}')">Delete</button>` 
-            : 'No happiness rating';
+            : `No happiness rating <button class="update-btn" onclick="handleUpdateHappiness('${date}')">Update</button>`;
         
         return `
             <div class="day-group">
@@ -628,6 +628,11 @@ window.handleDeleteHappiness = function(date) {
     };
     document.getElementById('deleteModalMessage').textContent = `Delete happiness rating for ${formatDateHuman(date)}?`;
     openModal('deleteModal');
+};
+
+window.handleUpdateHappiness = function(date) {
+    document.getElementById('happinessDate').value = date;
+    openModal('happinessModal');
 };
 
 window.handleDeleteMedia = function(id) {
