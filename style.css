@@ -328,8 +328,8 @@ h2 {
     padding: 20px;
     border: 1px solid #000;
     width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
+    max-width: 800px;
+    max-height: 85vh;
     overflow-y: auto;
 }
 
@@ -705,8 +705,11 @@ button:hover {
     color: #fff;
 }
 
-#searchResults {
+#searchResults, #apiSearchResults {
     margin-bottom: 15px;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
 }
 
 /* Recent Sources Display */
@@ -810,7 +813,7 @@ button:hover {
 
 /* Source Search Results */
 .source-result {
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ccc;
     cursor: pointer;
     margin-bottom: 5px;
@@ -824,8 +827,8 @@ button:hover {
 }
 
 .source-result-image {
-    width: 60px;
-    height: 90px;
+    width: 40px;
+    height: 60px;
     object-fit: cover;
     border: 1px solid #ddd;
     flex-shrink: 0;
@@ -842,9 +845,10 @@ button:hover {
 }
 
 .source-search-results {
-    max-height: 300px;
+    max-height: 240px;
     overflow-y: auto;
     margin-bottom: 15px;
+    border: 1px solid #ddd;
 }
 
 .search-loading {
@@ -855,7 +859,7 @@ button:hover {
 }
 
 .search-result {
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ccc;
     cursor: pointer;
     margin-bottom: 5px;
@@ -869,8 +873,8 @@ button:hover {
 }
 
 .search-result-image {
-    width: 60px;
-    height: 90px;
+    width: 40px;
+    height: 60px;
     object-fit: cover;
     border: 1px solid #ddd;
     flex-shrink: 0;
