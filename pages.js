@@ -245,7 +245,10 @@ const Pages = {
                             <input type="hidden" id="sourceReference">
                         </div>
                         
-                        <button type="submit">Add Source</button>
+                        <div class="modal-actions">
+                            <button type="submit" name="action" value="saveAndAdd" class="action-button">Save and Add Entry</button>
+                            <button type="submit" name="action" value="save" class="action-button secondary-button">Save</button>
+                        </div>
                     </form>
                 </div>
             </div>

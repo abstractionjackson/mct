@@ -310,6 +310,8 @@ function setupFormHandlers() {
         document.getElementById('sourceForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
+            const action = e.submitter?.value || 'save';
+            
             const name = document.getElementById('sourceName').value;
             const format = document.getElementById('sourceFormat').value;
             const imageUrl = document.getElementById('sourceImageUrl')?.value || document.getElementById('sourceImageData')?.value || null;
@@ -322,10 +324,12 @@ function setupFormHandlers() {
             
             closeModal('sourceModal');
             
-            // Auto-select the newly added source in media form if it's open
-            if (document.getElementById('mediaModal').style.display !== 'none') {
-                selectSourceForEntry(name, format);
-                showRecentSources();
+            // If "Save and Add Entry" was clicked, open media modal with this source selected
+            if (action === 'saveAndAdd') {
+                setTimeout(() => {
+                    selectSourceForEntry(name, format);
+                    openModal('mediaModal');
+                }, 100);
             }
         });
 
