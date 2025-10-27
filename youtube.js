@@ -1,44 +1,72 @@
-// YouTube Integration
+// YouTube Integration using Google Identity Services (GIS)
 
-const YOUTUBE_CLIENT_ID = 'YOUR_CLIENT_ID'; // User needs to set this up
-const YOUTUBE_API_KEY = 'YOUR_API_KEY'; // User needs to set this up
 const YOUTUBE_SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
-
 let youtubeAccessToken = null;
+let tokenClient = null;
 
 // Check if YouTube is configured
 function isYouTubeConfigured() {
-    return YOUTUBE_CLIENT_ID !== 'YOUR_CLIENT_ID' && YOUTUBE_API_KEY !== 'YOUR_API_KEY';
+    const config = getYouTubeConfig();
+    return config.CLIENT_ID !== 'YOUR_CLIENT_ID' && config.API_KEY !== 'YOUR_API_KEY';
 }
 
-// Load Google API
+// Load Google API and GIS
 function loadYouTubeAPI() {
     return new Promise((resolve, reject) => {
+        const config = getYouTubeConfig();
+        
         if (!isYouTubeConfigured()) {
             reject(new Error('YouTube API not configured. See YOUTUBE_SETUP.md'));
             return;
         }
         
-        if (window.gapi) {
+        // Load gapi client
+        if (!window.gapi) {
+            const gapiScript = document.createElement('script');
+            gapiScript.src = 'https://apis.google.com/js/api.js';
+            gapiScript.onload = () => {
+                gapi.load('client', () => {
+                    gapi.client.init({
+                        apiKey: config.API_KEY,
+                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest']
+                    }).then(() => {
+                        loadGIS(config, resolve, reject);
+                    }, reject);
+                });
+            };
+            gapiScript.onerror = reject;
+            document.head.appendChild(gapiScript);
+        } else if (!window.google?.accounts) {
+            loadGIS(config, resolve, reject);
+        } else {
             resolve();
-            return;
         }
-        
-        const script = document.createElement('script');
-        script.src = 'https://apis.google.com/js/api.js';
-        script.onload = () => {
-            gapi.load('client:auth2', () => {
-                gapi.client.init({
-                    apiKey: YOUTUBE_API_KEY,
-                    clientId: YOUTUBE_CLIENT_ID,
-                    scope: YOUTUBE_SCOPES,
-                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest']
-                }).then(resolve, reject);
-            });
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
     });
+}
+
+// Load Google Identity Services
+function loadGIS(config, resolve, reject) {
+    if (!window.google?.accounts) {
+        const gisScript = document.createElement('script');
+        gisScript.src = 'https://accounts.google.com/gsi/client';
+        gisScript.onload = () => {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: config.CLIENT_ID,
+                scope: YOUTUBE_SCOPES,
+                callback: ''
+            });
+            resolve();
+        };
+        gisScript.onerror = reject;
+        document.head.appendChild(gisScript);
+    } else {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: config.CLIENT_ID,
+            scope: YOUTUBE_SCOPES,
+            callback: ''
+        });
+        resolve();
+    }
 }
 
 // Authenticate with YouTube
@@ -46,17 +74,25 @@ async function authenticateYouTube() {
     try {
         await loadYouTubeAPI();
         
-        const authInstance = gapi.auth2.getAuthInstance();
-        
-        if (!authInstance.isSignedIn.get()) {
-            await authInstance.signIn();
-        }
-        
-        const user = authInstance.currentUser.get();
-        const authResponse = user.getAuthResponse(true);
-        youtubeAccessToken = authResponse.access_token;
-        
-        return true;
+        return new Promise((resolve, reject) => {
+            tokenClient.callback = (response) => {
+                if (response.error) {
+                    console.error('YouTube authentication failed:', response);
+                    reject(response);
+                    return;
+                }
+                youtubeAccessToken = response.access_token;
+                resolve(true);
+            };
+            
+            // Request token
+            if (youtubeAccessToken) {
+                // Check if token is still valid
+                resolve(true);
+            } else {
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            }
+        });
     } catch (error) {
         console.error('YouTube authentication failed:', error);
         return false;
@@ -68,6 +104,9 @@ async function getTodayWatchHistory() {
     if (!youtubeAccessToken) {
         throw new Error('Not authenticated');
     }
+    
+    // Set authorization header
+    gapi.client.setToken({ access_token: youtubeAccessToken });
     
     // Get start of today in ISO format
     const today = new Date();
@@ -134,18 +173,15 @@ function parseYouTubeDuration(duration) {
 
 // Disconnect YouTube
 function disconnectYouTube() {
-    if (window.gapi && gapi.auth2) {
-        const authInstance = gapi.auth2.getAuthInstance();
-        if (authInstance) {
-            authInstance.signOut();
-        }
+    if (youtubeAccessToken && window.google?.accounts?.oauth2) {
+        google.accounts.oauth2.revoke(youtubeAccessToken, () => {
+            console.log('YouTube access revoked');
+        });
     }
     youtubeAccessToken = null;
 }
 
 // Check if connected
 function isYouTubeConnected() {
-    if (!window.gapi || !gapi.auth2) return false;
-    const authInstance = gapi.auth2.getAuthInstance();
-    return authInstance && authInstance.isSignedIn.get();
+    return !!youtubeAccessToken;
 }
