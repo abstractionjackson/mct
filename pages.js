@@ -24,7 +24,7 @@ const Pages = {
     
     dashboard() {
         return `
-            ${this._navbar(false)}
+            ${this._navbar(false, true)}
             <div class="container">
                 <div class="action-buttons">
                     <button id="openHappinessModal" class="action-button">Add Happiness Entry</button>
@@ -41,7 +41,7 @@ const Pages = {
     
     example() {
         return `
-            ${this._navbar(true)}
+            ${this._navbar(true, false)}
             <div class="container">
                 <h1>Media & Happiness Tracker <span class="demo-badge">(Example)</span></h1>
                 
@@ -58,7 +58,38 @@ const Pages = {
         `;
     },
     
-    _navbar(showCTA = false) {
+    admin() {
+        return `
+            ${this._navbar(false, true)}
+            <div class="container">
+                <h1>Integrations</h1>
+                <p>Connect your accounts to automatically import media data.</p>
+                
+                <div class="integrations-list">
+                    <div class="integration-card">
+                        <h3>YouTube</h3>
+                        <p>Import your watch history from YouTube.</p>
+                        <button class="action-button" disabled>Coming Soon</button>
+                    </div>
+                    
+                    <div class="integration-card">
+                        <h3>IMDb</h3>
+                        <p>Import your ratings and watchlist from IMDb.</p>
+                        <button class="action-button" disabled>Coming Soon</button>
+                    </div>
+                    
+                    <div class="integration-card">
+                        <h3>Goodreads</h3>
+                        <p>Import your reading list from Goodreads.</p>
+                        <button class="action-button" disabled>Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+            ${this._footer()}
+        `;
+    },
+    
+    _navbar(showCTA = false, showAdmin = false) {
         let ctaHTML = '';
         if (showCTA) {
             // Check if user has data to determine CTA text
@@ -67,10 +98,18 @@ const Pages = {
             ctaHTML = `<a href="#/dashboard" class="navbar-cta">${ctaText}</a>`;
         }
         
+        let adminHTML = '';
+        if (showAdmin) {
+            adminHTML = `<a href="#/admin" class="navbar-link">Integrations</a>`;
+        }
+        
         return `
             <nav class="navbar">
                 <a href="#/dashboard" class="navbar-brand">Media & Happiness Tracker</a>
-                ${ctaHTML}
+                <div class="navbar-right">
+                    ${adminHTML}
+                    ${ctaHTML}
+                </div>
             </nav>
         `;
     },
@@ -82,6 +121,7 @@ const Pages = {
                     <a href="#/landing?force=true">Home</a>
                     <a href="#/dashboard">Dashboard</a>
                     <a href="#/example">Example</a>
+                    <a href="#/admin">Integrations</a>
                 </div>
                 <div class="copyright">
                     © ${new Date().getFullYear()} abstractionjackson

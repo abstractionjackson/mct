@@ -768,6 +768,10 @@ Router.register('/dashboard', () => {
     updateHappinessButton();
 });
 
+Router.register('/admin', () => {
+    document.getElementById('root').innerHTML = Pages.admin();
+});
+
 // Helper function to clear data and navigate
 window.clearDataAndNavigate = function() {
     clearAllData();
