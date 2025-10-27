@@ -376,6 +376,8 @@ function setupFormHandlers() {
                     let subtitle = '';
                     if (format === 'Book') {
                         subtitle = `${result.author}${result.year ? ` (${result.year})` : ''}`;
+                    } else if (format === 'Movie') {
+                        subtitle = result.year ? `${result.year}` : '';
                     }
                     
                     return `
@@ -1026,14 +1028,6 @@ Router.register('/dashboard', () => {
     setupModalHandlers();
     render();
     updateHappinessButton();
-});
-
-Router.register('/admin', () => {
-    document.getElementById('root').innerHTML = Pages.admin();
-});
-
-Router.register('/admin', () => {
-    document.getElementById('root').innerHTML = Pages.admin();
 });
 
 // Helper function to clear data and navigate

@@ -23,16 +23,44 @@ async function searchBooks(query) {
     }
 }
 
+// OMDb API for movies (requires API key from http://www.omdbapi.com/)
+async function searchMovies(query) {
+    try {
+        // Using free OMDb API - you can get a key from http://www.omdbapi.com/
+        // For demo purposes, using a public key (limited requests)
+        const apiKey = '3e6e4b0e'; // Get your own key for production
+        const response = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}&type=movie`);
+        const data = await response.json();
+        
+        if (data.Response === 'False' || !data.Search) {
+            return [];
+        }
+        
+        return data.Search.map(movie => ({
+            title: movie.Title,
+            author: movie.Year,
+            year: movie.Year,
+            coverUrl: movie.Poster !== 'N/A' ? movie.Poster : null,
+            reference: {
+                type: 'omdb',
+                imdbID: movie.imdbID
+            }
+        }));
+    } catch (error) {
+        console.error('OMDb search failed:', error);
+        return [];
+    }
+}
+
 // Search based on selected format
 async function searchMediaByFormat(format, query) {
     switch (format) {
         case 'Book':
             return await searchBooks(query);
         case 'Movie':
-            // TODO: Implement movie search (TMDB, OMDB)
-            return [];
+            return await searchMovies(query);
         case 'TV Show':
-            // TODO: Implement TV show search
+            // TODO: Implement TV show search (can also use OMDb)
             return [];
         case 'Music':
             // TODO: Implement music search (Spotify, Last.fm)

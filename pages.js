@@ -29,7 +29,6 @@ const Pages = {
                 <div class="action-buttons">
                     <button id="openHappinessModal" class="action-button">Add Happiness Entry</button>
                     <button id="openMediaModal" class="action-button">Add Media Entry</button>
-                    <button id="openSourceModal" class="action-button secondary-button">Add New Source</button>
                 </div>
 
                 ${this._modals()}
@@ -102,7 +101,6 @@ const Pages = {
             <nav class="navbar">
                 <a href="#/dashboard" class="navbar-brand">Media & Happiness Tracker</a>
                 <div class="navbar-right">
-                    ${adminHTML}
                     ${ctaHTML}
                 </div>
             </nav>
@@ -116,7 +114,6 @@ const Pages = {
                     <a href="#/landing?force=true">Home</a>
                     <a href="#/dashboard">Dashboard</a>
                     <a href="#/example">Example</a>
-                    <a href="#/admin">Integrations</a>
                 </div>
                 <div class="copyright">
                     © ${new Date().getFullYear()} abstractionjackson
