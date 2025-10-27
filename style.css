@@ -504,7 +504,7 @@ button:hover {
 .day-header {
     font-weight: 500;
     margin-bottom: 10px;
-    padding-bottom: 5px;
+    padding: 0 8px 5px 8px;
     border-bottom: 1px solid #ccc;
     display: flex;
     justify-content: space-between;
