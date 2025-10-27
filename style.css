@@ -506,6 +506,9 @@ button:hover {
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .media-item {

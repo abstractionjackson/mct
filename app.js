@@ -587,13 +587,17 @@ function renderEntries(happiness, media) {
         const data = dateMap[date];
         const totalDuration = data.media.reduce((sum, m) => sum + m.duration, 0);
         const happinessText = data.happiness !== null 
-            ? `Happiness: ${data.happiness} <button class="delete-btn" onclick="handleDeleteHappiness('${date}')">Delete</button>` 
-            : `No happiness rating <button class="update-btn" onclick="handleUpdateHappiness('${date}')">Update</button>`;
+            ? `Happiness: ${data.happiness}` 
+            : 'No happiness rating';
+        const happinessButton = data.happiness !== null
+            ? `<button class="delete-btn" onclick="handleDeleteHappiness('${date}')">Delete</button>`
+            : `<button class="update-btn" onclick="handleUpdateHappiness('${date}')">Update</button>`;
         
         return `
             <div class="day-group">
                 <div class="day-header">
-                    ${formatDateHuman(date)} • ${happinessText} • ${totalDuration} min total
+                    <span>${formatDateHuman(date)} • ${happinessText} • ${totalDuration} min total</span>
+                    ${happinessButton}
                 </div>
                 ${data.media.length > 0 ? data.media.map(m => {
                     const sourceKey = `${m.name}-${m.type}`;
