@@ -29,9 +29,11 @@ const Pages = {
                 <div class="action-buttons">
                     <button id="openHappinessModal" class="action-button">Add Happiness Entry</button>
                     <button id="openMediaModal" class="action-button">Add Media Entry</button>
+                    <button id="syncYouTube" class="action-button secondary">Sync YouTube</button>
                 </div>
 
                 ${this._modals()}
+                ${this.youtubeImportModal()}
                 ${this._visualization()}
                 ${this._entries()}
             </div>
@@ -69,7 +71,8 @@ const Pages = {
                     <div class="integration-card">
                         <h3>YouTube</h3>
                         <p>Import your watch history from YouTube.</p>
-                        <button class="action-button" disabled>Coming Soon</button>
+                        <button class="action-button" id="connectYouTube">Connect YouTube</button>
+                        <div id="youtubeStatus"></div>
                     </div>
                     
                     <div class="integration-card">
@@ -234,6 +237,23 @@ const Pages = {
                     <div class="delete-modal-actions">
                         <button id="confirmDelete" class="action-button">Delete</button>
                         <button id="cancelDelete" class="action-button cancel-button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+    
+    youtubeImportModal() {
+        return `
+            <div id="youtubeImportModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" data-modal="youtubeImportModal">&times;</span>
+                    <h2>Import from YouTube</h2>
+                    <p>Select videos from today to import:</p>
+                    <div id="youtubeVideos" class="youtube-videos-list"></div>
+                    <div class="modal-actions">
+                        <button id="importSelectedVideos" class="action-button">Import Selected</button>
+                        <button class="action-button cancel-button" onclick="closeModal('youtubeImportModal')">Cancel</button>
                     </div>
                 </div>
             </div>
