@@ -6,9 +6,19 @@ const YOUTUBE_SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
 
 let youtubeAccessToken = null;
 
+// Check if YouTube is configured
+function isYouTubeConfigured() {
+    return YOUTUBE_CLIENT_ID !== 'YOUR_CLIENT_ID' && YOUTUBE_API_KEY !== 'YOUR_API_KEY';
+}
+
 // Load Google API
 function loadYouTubeAPI() {
     return new Promise((resolve, reject) => {
+        if (!isYouTubeConfigured()) {
+            reject(new Error('YouTube API not configured. See YOUTUBE_SETUP.md'));
+            return;
+        }
+        
         if (window.gapi) {
             resolve();
             return;

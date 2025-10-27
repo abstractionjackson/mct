@@ -803,35 +803,56 @@ function setupYouTubeAdmin() {
 
 async function handleYouTubeConnect() {
     const statusDiv = document.getElementById('youtubeStatus');
+    
+    if (!isYouTubeConfigured()) {
+        statusDiv.innerHTML = '<p class="error">⚠️ YouTube API not configured. See YOUTUBE_SETUP.md for instructions.</p>';
+        return;
+    }
+    
     statusDiv.innerHTML = '<p>Connecting...</p>';
     
-    const success = await authenticateYouTube();
-    
-    if (success) {
-        statusDiv.innerHTML = '<p class="success">✓ Connected successfully!</p>';
-        const connectBtn = document.getElementById('connectYouTube');
-        connectBtn.textContent = 'Disconnect';
-        connectBtn.onclick = () => {
-            disconnectYouTube();
-            statusDiv.innerHTML = '<p>Disconnected</p>';
-            connectBtn.textContent = 'Connect YouTube';
-            connectBtn.onclick = handleYouTubeConnect;
-        };
-    } else {
-        statusDiv.innerHTML = '<p class="error">Failed to connect. Please try again.</p>';
+    try {
+        const success = await authenticateYouTube();
+        
+        if (success) {
+            statusDiv.innerHTML = '<p class="success">✓ Connected successfully!</p>';
+            const connectBtn = document.getElementById('connectYouTube');
+            connectBtn.textContent = 'Disconnect';
+            connectBtn.onclick = () => {
+                disconnectYouTube();
+                statusDiv.innerHTML = '<p>Disconnected</p>';
+                connectBtn.textContent = 'Connect YouTube';
+                connectBtn.onclick = handleYouTubeConnect;
+            };
+        } else {
+            statusDiv.innerHTML = '<p class="error">Failed to connect. Please try again.</p>';
+        }
+    } catch (error) {
+        console.error('YouTube connection error:', error);
+        statusDiv.innerHTML = `<p class="error">Error: ${error.message || 'Connection failed'}</p>`;
     }
 }
 
 // YouTube Sync Handler
 async function handleYouTubeSync() {
+    if (!isYouTubeConfigured()) {
+        alert('YouTube API not configured. Please see YOUTUBE_SETUP.md for setup instructions.');
+        return;
+    }
+    
     if (!isYouTubeConnected()) {
         if (!confirm('YouTube is not connected. Would you like to connect now?')) {
             return;
         }
         
-        const success = await authenticateYouTube();
-        if (!success) {
-            alert('Failed to connect to YouTube. Please try from the Integrations page.');
+        try {
+            const success = await authenticateYouTube();
+            if (!success) {
+                alert('Failed to connect to YouTube. Please try from the Integrations page.');
+                return;
+            }
+        } catch (error) {
+            alert(`Failed to connect: ${error.message || 'Unknown error'}`);
             return;
         }
     }

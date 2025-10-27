@@ -2,6 +2,19 @@
 
 To use the YouTube integration feature, you need to set up Google OAuth credentials.
 
+## ⚠️ Important: Must Use Local Server
+
+**You cannot open the HTML file directly in your browser** (`file://` protocol). Google OAuth requires a proper HTTP origin.
+
+### Quick Start - Run Local Server:
+```bash
+# In the project directory:
+python3 -m http.server 8000
+
+# Then open in browser:
+# http://localhost:8000
+```
+
 ## Setup Steps
 
 1. **Go to Google Cloud Console**
